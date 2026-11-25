@@ -103,6 +103,31 @@ Mobile is not built from the fork. A fork feature needs to work on web and deskt
 or summary if it does nothing on mobile, and make sure it does not break the mobile build or shared
 `packages/client-runtime` code.
 
+## Local desktop builds and T3 Connect
+
+The fork release workflow already loads the public production T3 Connect configuration. A fresh
+local checkout does not. Before building locally, copy `.env.example` to `.env` if you do not
+already have a configuration file. If you do, merge the public connection settings without
+replacing your existing values. See [T3 Connect setup](docs/operations/connect-setup.md).
+
+Build after configuring the environment:
+
+```sh
+vp run dist:desktop:artifact --platform mac --target dir --arch arm64
+```
+
+The client embeds these settings at build time. Adding `.env` after building, restarting an old
+binary, or packaging with `--skip-build` does not update them. With no connection configuration,
+Settings hides both the T3 Connect sign-in button and the account avatar. The avatar appears only
+after signing in to T3 Connect; signing in to an agent provider does not sign in to T3 Connect.
+
+On macOS, quit T3 before replacing the installed app, then launch the updated copy directly from
+`/Applications`. Spotlight and Dock shortcuts can reopen a different copy with the same name,
+including one in a build directory or backup folder. Store old app backups as archives rather than
+launchable `.app` bundles. If the sign-in button is still missing, check the running app's path in
+Activity Monitor before rebuilding again. Keep the app's user data separate from app replacement;
+do not remove `~/.t3` or its Application Support data to resolve duplicate apps.
+
 ## Releases
 
 Releases are built by `.github/workflows/sidebar-release.yml`, which runs only on demand.
